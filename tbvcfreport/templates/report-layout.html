@@ -9,9 +9,6 @@
         {% if item[21]['protein'] %}
         <a target="_blank" href="http://combattb.sanbi.ac.za/search?q={{ item[21]['protein']['uniquename'] }}">{{
             item[21]['protein']['uniquename'] }}</a>
-
-        <!-- <p class="small">{{ item[21]['protein']['uniquename'] }}</p> -->
-        <!-- http://combattb.sanbi.ac.za/search?&q=P9WNU1 -->
         {% else %}
         <p>{{ "NA" }}</p>
         {% endif %}
@@ -24,7 +21,12 @@
     </td>
     <td>{{ item[18] or "NA" }}</td>
     <td>{{ item[0] or "NA" }}</td>
-    <td>{{ item[10] or "NA" }}</td>
+    {% if item[22] %}
+    {% set class = "text-danger" %}
+    {% else %}
+    {% set class = "text-info" %}
+    {% endif %}
+    <td class="{{ class }}" data-toggle="tooltip" title="Novel variant">{{ item[10] or "NA" }}</td>
     <td>{{ item[2] or "NA" }}</td>
     <td>
         {% if item[21]['pathway']|length >= 1 %} {% for pathway in item[21]['pathway'] %}

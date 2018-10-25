@@ -26,8 +26,10 @@ def get_gene_data(q):
         data = graph.run(
             "MATCH (gene:Gene) {where_statement} "
             "OPTIONAL MATCH (protein:Protein)<-[:ENCODES]-(gene) "
+            "OPTIONAL MATCH (variant:Variant)-[:OCCURS_IN]->(gene) "
             "OPTIONAL MATCH (pathway:Pathway)<-[:INVOLVED_IN]-(protein) "
             "RETURN gene, protein, "
+            "collect(distinct(variant)) as variant, "
             "collect(distinct(pathway)) as pathway "
             "order by gene.uniquename asc"
             .format(where_statement=where_statement)).data()

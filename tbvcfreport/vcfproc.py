@@ -23,7 +23,7 @@ class VCFProc(object):
         self.vcf_file = vcf_file
 
     def parse(self):
-        variants, rv_tags = [], []
+        variants, rv_tags, known_variant = [], [], False
         if self.vcf_file.endswith(".vcf"):
             log.info("Processing: {}...\n".format(self.vcf_file))
             with open(self.vcf_file) as _vcf:
@@ -41,11 +41,15 @@ class VCFProc(object):
                             gene_identifier = annotation[4]
                             # TODO: It is much faster to issue 1 query
                             rv_tags.append(gene_identifier)
-                            variant_data = get_gene_data(gene_identifier)
+                            gene_db_data = get_gene_data(gene_identifier)
+                            if annotation[10] is not '':
+                                # Check if variant in known (in db)
+                                known_variant = self.is_variant_known(
+                                    record.POS, annotation, gene_db_data['variant'])
                             annotation.extend(
                                 [record.CHROM, record.POS, record.REF,
                                  record.var_type, affected_region,
-                                 variant_data])
+                                 gene_db_data, known_variant])
                             variants.append(annotation)
         else:
             sys.stderr.write("Can't parse {vcf_file}".format(
@@ -63,3 +67,17 @@ class VCFProc(object):
         if record.INFO.get('ANN'):
             annotations = [ann.split("|") for ann in record.INFO['ANN']]
         return annotations
+
+    @staticmethod
+    def is_variant_known(pos, rec_annotation, db_variants):
+        known = False
+        if len(db_variants) is 0:
+            return known
+        else:
+            for variant in db_variants:
+                if rec_annotation[10].strip('p.') == variant['consequence'] and pos == variant['pos']:
+                    known = True
+                    log.info("Found known variant for {gene}: {variant}"
+                             .format(gene=rec_annotation[3],
+                                     variant=variant['consequence']))
+        return known
