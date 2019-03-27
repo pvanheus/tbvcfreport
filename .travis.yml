@@ -4,7 +4,6 @@ dist: trusty
 
 language: python
 python:
-  - "2.7"
   - "3.5"
   - "3.6"
 
@@ -31,8 +30,8 @@ before_script:
   - conda config --add channels bioconda
   - conda config --add channels https://conda.anaconda.org/thoba
   - conda info -a
-  - deps='pip pipenv click jinja2 tqdm py2neo=3.1.2 pyvcf=0.6.8'
-  - conda install pip conda-build anaconda-client $deps
+  - deps='pip click jinja2 tqdm py2neo=3.1.2 pyvcf=0.6.8'
+  - conda install conda-build anaconda-client $deps
   - python setup.py install
   - git clone https://github.com/COMBAT-TB/neo4j_db.git && cd neo4j_db/
   - docker-compose up --build -d && cd ..
