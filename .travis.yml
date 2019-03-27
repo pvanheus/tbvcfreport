@@ -41,7 +41,6 @@ before_install:
 install:
   - deps='pip click jinja2 tqdm py2neo=3.1.2 pyvcf=0.6.8'
   - conda install conda-build anaconda-client $deps
-  - pip install -r requirements.txt
   - pip install -e .
 
 script:
