@@ -3,6 +3,9 @@ os:
 dist: trusty
 
 language: python
+cache:
+  directories:
+    - "$HOME/.cache/pip"
 python:
   - "3.5"
   - "3.6"
@@ -13,7 +16,7 @@ services:
 env:
   - DATABASE_URI=localhost
 
-before_script:
+before_install:
   - sudo apt-get update
   - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
     wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
@@ -30,13 +33,15 @@ before_script:
   - conda config --add channels bioconda
   - conda config --add channels https://conda.anaconda.org/thoba
   - conda info -a
-  - deps='pip click jinja2 tqdm py2neo=3.1.2 pyvcf=0.6.8'
-  - conda install conda-build anaconda-client $deps
-  - python setup.py install
   - git clone https://github.com/COMBAT-TB/neo4j_db.git && cd neo4j_db/
   - docker-compose up --build -d && cd ..
   - docker ps
   - sleep 30
+
+install:
+  - deps='pip click jinja2 tqdm py2neo=3.1.2 pyvcf=0.6.8'
+  - conda install conda-build anaconda-client $deps
+  - python setup.py install
 
 script:
   - travis_wait 30 pytest -v test/
